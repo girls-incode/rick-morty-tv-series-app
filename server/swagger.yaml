@@ -1,0 +1,102 @@
+openapi: 3.0.0
+info:
+  title: Rick Morty app
+  description: Rick Morty tv series API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:4000
+    description: Local development server
+    variables:
+     basePath:
+      default: /api/v1
+
+paths:
+  /login:
+    post:
+      summary: Authenticate user and return JWT token
+      description: Accounts must be verified before authenticating.
+      operationId: authenticate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "maria@gmail.com"
+                password:
+                  type: string
+                  example: "pass123456"
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          description: User details, a JWT access token and a refresh token cookie
+          headers:
+            Set-Cookie:
+              description: "`refreshToken`"
+              schema:
+                type: string
+                example: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwMmZmMmVhY2FmM2Q2MjdiODNmOGExZCIsImlhdCI6MTYxMzc1NTExNCwiZXhwIjoxNjE0MzU5OTE0fQ.F4_yb8ikiIRafEfdxvpovXsqRgdPNyafTo37zUkF6bI; Path=/; Expires=Tue, 20 Jun 2021 09:00:00 GMT; HttpOnly
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "602ff2eacaf3d627b83f8a1d"
+                  name:
+                    type: string
+                    example: "Mary"
+                  email:
+                    type: string
+                    example: "maria@gmail.com"
+                  created:
+                    type: string
+                    example: "2021-02-19T21:04:09.731Z"
+                  jwtToken:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwMmZmMmFhZmZlMzRmMmM3MDI0ODJjZCIsImlhdCI6MTYxMzc1NTA1MCwiZXhwIjoxNjE0MzU5ODUwfQ.sl4tVdxSyE5uajngsfMb6SFj2Bx2QIiJwSWtNJJEE_Y"
+        "403":
+          description: The email or password is incorrect
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Email or password is incorrect"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid - the user does not have access to perform the action
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Unauthorized"
+    NotFoundError:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Not Found"

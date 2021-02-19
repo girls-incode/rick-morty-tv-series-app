@@ -4,16 +4,22 @@ import express, {
     Response,
 } from 'express';
 import Joi from 'joi';
-import validateRequest from '../middleware/http';
+import { validateRequest } from '../middleware/http';
 import { verifyToken } from '../middleware/auth';
 
-import { loginService, getUserByIdService, registerService} from '../services/user';
+import {
+    loginService,
+    getUserByIdService,
+    registerService,
+    logoutService
+} from '../services/user';
 import HttpException from './../utils/httpException';
 
 const router = express.Router();
 
 router.post('/login', loginSchema, login);
 router.post('/register', registerSchema, register);
+router.get('/logout', verifyToken, logout);
 router.get('/:id', verifyToken, getById);
 
 function loginSchema(req: Request, res: Response, next: NextFunction) {
@@ -61,12 +67,18 @@ function setTokenCookie(res: Response, token:string) {
 
 function getById(req: any, res: Response, next: NextFunction) {
     if (req.params.id !== req.user.id) {
-        next(new HttpException(401, 'Unauthorized'))
+        return next(new HttpException(401, 'Unauthorized'))
     }
 
     getUserByIdService(req.params.id)
         .then(user => user ? res.json(user) : res.sendStatus(404))
         .catch(next);
+}
+
+function logout(req: any, res: Response, next: NextFunction) {
+    logoutService(req.user.id).then(() => {
+        res.clearCookie('refreshToken');
+    }).catch(next);
 }
 
 export default router;

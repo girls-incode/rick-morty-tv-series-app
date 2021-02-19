@@ -4,7 +4,7 @@ import express, {
 } from 'express';
 import HttpException from './../utils/httpException';
 
-export default function validateRequest(req: Request, next: NextFunction, schema:any) {
+export function validateRequest(req: Request, next: NextFunction, schema: any) {
     const options = {
         abortEarly: false,
         allowUnknown: true,

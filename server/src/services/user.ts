@@ -1,10 +1,3 @@
-import express, {
-    Application,
-    NextFunction,
-    Request,
-    Response,
-} from 'express';
-
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
@@ -17,7 +10,7 @@ export async function loginService({ email, password }: any) {
     const user:any = await User.findOne({ email });
 
     if (!user || !bcrypt.compareSync(password, user.password)) {
-        throw 'Email or password is incorrect';
+        throw new HttpException(403, 'Email or password is incorrect');
     }
 
     const jwtToken = generateJwtToken(user);
@@ -42,10 +35,13 @@ export async function registerService(body:any) {
     const jwtToken = generateJwtToken(user);
     await user.save();
     const refreshToken: any = generateRefreshToken(user);
-    console.log('token', refreshToken);
     
     await refreshToken.save();
-    return user;
+    return {
+        ...userInfo(user),
+        jwtToken,
+        refreshToken: refreshToken.token
+    }
 }
 
 function generateJwtToken(user:any) {
@@ -84,4 +80,8 @@ async function getUser(id:number) {
 function userInfo(user:any) {
     const { _id, name, email, created, favorites } = user;
     return { _id, name, email, created, favorites }
+}
+
+export async function logoutService(userId: string) {
+    await RefreshToken.deleteOne({ user: userId });
 }

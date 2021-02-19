@@ -1,12 +1,15 @@
+import express, { Application } from 'express';
+import 'dotenv/config';
+import cors from 'cors';
+import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import cors from 'cors';
-import 'dotenv/config';
-import express, { Application } from 'express';
-import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
 import characterRoute from './controllers/character';
 import userRoute from './controllers/user';
 import errorHandler from './middleware/errorHandler';
+import notFoundHandler from './middleware/notFound';
 import db from './utils/db';
 import validateEnv from './utils/validateEnv';
 
@@ -20,6 +23,11 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/characters', characterRoute);
+
+const swaggerDocument = YAML.load('./swagger.yaml');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+app.use(notFoundHandler);
 app.use(errorHandler);
 
 export default app;

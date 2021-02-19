@@ -11,7 +11,7 @@ export default {
     "^.+\\.tsx?$": "ts-jest"
   },
   coverageDirectory: "coverage",
-  "collectCoverage": false,
+  "collectCoverage": true,
   "collectCoverageFrom": [
     "src/**/*.ts"
   ],
