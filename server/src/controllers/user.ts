@@ -8,6 +8,7 @@ import validateRequest from '../middleware/http';
 import { verifyToken } from '../middleware/auth';
 
 import { loginService, getUserByIdService, registerService} from '../services/user';
+import HttpException from './../utils/httpException';
 
 const router = express.Router();
 
@@ -60,7 +61,7 @@ function setTokenCookie(res: Response, token:string) {
 
 function getById(req: any, res: Response, next: NextFunction) {
     if (req.params.id !== req.user.id) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        next(new HttpException(401, 'Unauthorized'))
     }
 
     getUserByIdService(req.params.id)

@@ -1,15 +1,13 @@
-import express, {
-    Application
-} from 'express';
-
-import 'dotenv/config';
-import cors from 'cors';
-import morgan from 'morgan';
-import db from './utils/db';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import userRoute from './controllers/user';
+import cors from 'cors';
+import 'dotenv/config';
+import express, { Application } from 'express';
+import morgan from 'morgan';
 import characterRoute from './controllers/character';
+import userRoute from './controllers/user';
+import errorHandler from './middleware/errorHandler';
+import db from './utils/db';
 import validateEnv from './utils/validateEnv';
 
 validateEnv();
@@ -22,5 +20,6 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/characters', characterRoute);
+app.use(errorHandler);
 
 export default app;

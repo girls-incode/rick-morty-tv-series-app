@@ -11,6 +11,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user';
 import RefreshToken from '../models/token';
 import db from '../utils/db';
+import HttpException from './../utils/httpException';
 
 export async function loginService({ email, password }: any) {
     const user:any = await User.findOne({ email });
@@ -32,7 +33,7 @@ export async function loginService({ email, password }: any) {
 
 export async function registerService(body:any) {
     if (await User.findOne({ email: body.email })) {
-        throw 'User already exists';
+        throw new HttpException(409, 'User already exists');
     }
 
     const user:any = new User(body);
