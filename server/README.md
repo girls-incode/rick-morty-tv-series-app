@@ -11,3 +11,7 @@ db.users.drop()
 db.refreshtokens.drop()
 
 ```
+
+### To improve
+- make an Authorization Server and an Requests Server, 2 microservices with separate responsabilities
+- add ip and device infos for auth operations 

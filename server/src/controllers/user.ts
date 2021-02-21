@@ -11,7 +11,8 @@ import {
     loginService,
     getUserByIdService,
     registerService,
-    logoutService
+    logoutService,
+    tokenService
 } from '../services/user';
 import HttpException from './../utils/httpException';
 
@@ -19,6 +20,7 @@ const router = express.Router();
 
 router.post('/login', loginSchema, login);
 router.post('/register', registerSchema, register);
+router.post('/refresh-token', refreshToken);
 router.get('/logout', verifyToken, logout);
 router.get('/:id', verifyToken, getById);
 
@@ -34,7 +36,7 @@ function loginSchema(req: Request, res: Response, next: NextFunction) {
 function login(req: Request, res: Response, next: NextFunction) {
     const { email, password } = req.body;
     loginService({ email, password })
-        .then(({ refreshToken, ...user }) => {
+        .then(({ refreshToken, ...user }: any) => {
             setTokenCookie(res, refreshToken);
             res.json(user);
         })
@@ -79,6 +81,16 @@ function logout(req: any, res: Response, next: NextFunction) {
     logoutService(req.user.id).then(() => {
         res.clearCookie('refreshToken');
     }).catch(next);
+}
+
+function refreshToken(req: any, res: Response, next: NextFunction) {
+    const token = req.cookies.refreshToken;
+    tokenService(token)
+        .then(({ refreshToken, ...user }: any) => {
+            setTokenCookie(res, refreshToken);
+            res.json(user);
+        })
+        .catch(next);
 }
 
 export default router;

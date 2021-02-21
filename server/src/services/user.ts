@@ -13,15 +13,7 @@ export async function loginService({ email, password }: any) {
         throw new HttpException(403, 'Email or password is incorrect');
     }
 
-    const jwtToken = generateJwtToken(user);
-    const refreshToken:any = generateRefreshToken(user);
-
-    await refreshToken.save();
-    return {
-        ...userInfo(user),
-        jwtToken,
-        refreshToken: refreshToken.token
-    }
+    return setNewTokens(user);
 }
 
 export async function registerService(body:any) {
@@ -32,19 +24,33 @@ export async function registerService(body:any) {
     const user:any = new User(body);
     user.password = hash(body.password);
     user.favorites = [];
-    const jwtToken = generateJwtToken(user);
     await user.save();
+    return setNewTokens(user);
+}
+
+export async function tokenService(token: string) {
+    const oldRefreshToken: any = await RefreshToken.findOne({ token }).populate('user');
+    if (!oldRefreshToken || oldRefreshToken.isExpired) throw new HttpException(400, 'Invalid token');
+    const { user } = oldRefreshToken;
+
+    await oldRefreshToken.deleteOne();
+
+    return setNewTokens(user);
+}
+
+async function setNewTokens(user: any) {
+    const accessToken = generateAccessToken(user);
     const refreshToken: any = generateRefreshToken(user);
-    
+
     await refreshToken.save();
     return {
         ...userInfo(user),
-        jwtToken,
+        accessToken,
         refreshToken: refreshToken.token
     }
 }
 
-function generateJwtToken(user:any) {
+function generateAccessToken(user: any) {
     return jwt.sign({ sub: user._id, id: user._id }, process.env.ACCESS_TOKEN_SECRET || '', { expiresIn: '30m' });
 }
 

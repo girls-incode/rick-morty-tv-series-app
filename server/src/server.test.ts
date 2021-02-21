@@ -34,11 +34,11 @@ describe('User', () => {
             });
     });
 
-    it('It should forbbid non-loggedin users', async () => {
+    it('It should forbbid non-authorized requests', async () => {
         await request(app)
             .get('/api/v1/users/44')
             .expect('Content-Type', /json/)
-            .expect(403, { message: 'forbidden' });
+            .expect(401, { message: 'Unauthorized' });
     });
 
     describe('Register', () => {
@@ -49,12 +49,12 @@ describe('User', () => {
                     email: 'maria@gmail.com',
                     password: 'maria123456'
                 });
-            const { name, email, favorites, id, jwtToken, refreshToken } = res.body;
+            const { name, email, favorites, id, accessToken, refreshToken } = res.body;
             expect(res.status).toBe(200);
             expect(name).toBe('mary');
             expect(email).toBe('maria@gmail.com');
             expect(favorites).toStrictEqual([]);
-            expect(jwtToken).not.toBe('');
+            expect(accessToken).not.toBe('');
             expect(refreshToken).not.toBe('');
             expect(id).not.toBe('');
         });
@@ -87,11 +87,11 @@ describe('User', () => {
         });
 
         it('It should return user data and 2 tokens', () => {
-            const { name, email, favorites, id, jwtToken } = res.body;
+            const { name, email, favorites, id, accessToken } = res.body;
             expect(name).toBe('mary');
             expect(email).toBe('maria@gmail.com');
             expect(favorites).toBeDefined();
-            expect(jwtToken).not.toBe('');
+            expect(accessToken).not.toBe('');
             expect(id).not.toBe('');
         });
 
