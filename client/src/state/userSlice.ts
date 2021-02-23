@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from './rootReducer';
+import apiClient, { setAuthToken, apiOptions } from './../utils/apiClient';
 import axios from 'axios';
 interface Character {
     id: number,
@@ -38,23 +39,15 @@ const initUserState: UserState = {
     refreshToken: '',
 }
 
-const authUrl = process.env.REACT_APP_AUTH_URL + '/api/v1/users';
-
-const setAuthToken = (token: string) => {
-    if (token) {
-        axios.defaults.headers.common["Authorization"] = token;
-    } else {
-        delete axios.defaults.headers.common["Authorization"];
-    }
-};
+const authUrl = process.env.REACT_APP_AUTH_URL;
 
 export const loginUser = createAsyncThunk(
     'users/login',
     async ({ email, password }: any, { rejectWithValue }) => {
         try {
-            const res: any = await axios.post(authUrl + '/login', { email, password }, { withCredentials: true });
+            const res: any = await apiClient.post(authUrl + '/login', { email, password }, apiOptions);
             if (res.status === 200) {
-                setAuthToken(res.data.refreshToken);
+                setAuthToken(res.data.accessToken);
                 return res.data
             }
         } catch (err) {
@@ -70,13 +63,13 @@ export const registerUser = createAsyncThunk(
     'users/registerUser',
     async ({ name, email, password }: any, { rejectWithValue }) => {
         try {
-            const res: any = await axios.post(
+            const res: any = await apiClient.post(
                 authUrl + '/register',
                 { name, email, password },
-                { withCredentials: true }
+                apiOptions
             );
             if (res.status === 200) {
-                setAuthToken(res.data.refreshToken);
+                setAuthToken(res.data.accessToken);
                 return res.data
             }
         } catch (err) {
@@ -92,13 +85,11 @@ export const userSlice = createSlice({
     name: 'user',
     initialState: initUserState,
     reducers: {
-        clearState: (state) => {
-            state.loading = false;
-            state.error = '';
-            return state;
+        logout: (state) => {
+            setAuthToken('');
+            return initUserState;
         },
         updateUser: (state, { payload }) => {
-            console.log('updateUser', state);
             return {
                 ...state,
                 loading: false,
@@ -110,7 +101,6 @@ export const userSlice = createSlice({
     },
     extraReducers: {
         [registerUser.fulfilled.type]: (state, { payload }) => {
-            console.log('payload', payload);
             return {
                 ...state,
                 loading: false,
@@ -136,7 +126,6 @@ export const userSlice = createSlice({
             }
         },
         [loginUser.rejected.type]: (state, { payload }) => {
-            console.log('payload', payload);
             state.loading = false;
             state.error = payload.message;
             // return state
@@ -144,11 +133,10 @@ export const userSlice = createSlice({
         [loginUser.pending.type]: (state) => {
             state.loading = true;
             state.loggedin = false;
-            // return state
         },
     },
 });
 
-export const { clearState, updateUser } = userSlice.actions;
+export const { logout, updateUser } = userSlice.actions;
 
 export const userSelector = (state: RootState) => state.user;

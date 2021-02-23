@@ -17,21 +17,19 @@ function Register() {
     const history = useHistory();
 
     const onSubmit = (data: IFormInputs) => {
-        console.log(JSON.stringify(data));
         dispatch(registerUser(data));
     }
 
-    useEffect(() => {
-        if (error) {
-            console.log(error);
-            // toast.error(errorMessage);
-        } else {
-            if (accessToken && !loading) {
-                console.log('finished', email);
-                // history.push('/');
-            }
-        }
-    }, [accessToken])
+    // useEffect(() => {
+    //     if (error) {
+    //         console.log(error);
+    //         // toast.error(errorMessage);
+    //     } else {
+    //         if (accessToken && !loading) {
+    //             // history.push('/');
+    //         }
+    //     }
+    // }, [accessToken])
 
     if (loading) return (<p>loading...</p>);
 

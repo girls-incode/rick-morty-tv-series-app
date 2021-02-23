@@ -3,12 +3,13 @@ import {
     getDefaultMiddleware
 } from "@reduxjs/toolkit";
 import { userSlice } from './userSlice';
+import { characterSlice } from './characterSlice';
 
 const store = configureStore({
     reducer: {
-        user: userSlice.reducer
+        user: userSlice.reducer,
+        character: characterSlice.reducer
         // app: appSlice.reducer,
-        // character: characterSlice
     },
     middleware: getDefaultMiddleware({
         serializableCheck: false

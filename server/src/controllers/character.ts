@@ -4,7 +4,7 @@ import express, {
     Response,
 } from 'express';
 import { verifyToken } from '../middleware/auth';
-import { fetchService } from '../services/character';
+import { fetchService } from '../services/api';
 
 const router = express.Router();
 const url = process.env.CHARACTERS_URL || '';
@@ -16,7 +16,7 @@ function getCharacters(req: Request, res: Response, next: NextFunction) {
         .then((data:any) => {
             res.send(data);
         })
-        .catch(next); 
+        .catch(next);
 }
 
 export default router;

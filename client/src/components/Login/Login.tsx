@@ -5,7 +5,7 @@ import { ErrorMessage } from "@hookform/error-message";
 import { useSelector, useDispatch } from 'react-redux';
 // import toast from 'react-hot-toast';
 import { useHistory } from 'react-router-dom';
-import { loginUser, clearState, userSelector } from '../../state/userSlice';
+import { loginUser, userSelector } from '../../state/userSlice';
 
 interface IFormInputs {
     email: string
@@ -19,7 +19,6 @@ const Login = () => {
     const { loggedin, loading, error, name, email } = useSelector(userSelector);
 
     const onSubmit = (data: any) => {
-        console.log(data);
         dispatch(loginUser(data));
     };
 
@@ -29,7 +28,6 @@ const Login = () => {
             // toast.error(errorMessage);
         } else {
             if (loggedin && !loading) {
-                console.log('finished', name, email);
                 history.push('/');
             }
         }
