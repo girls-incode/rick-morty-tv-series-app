@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { ErrorMessage } from "@hookform/error-message";
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { registerUser, userSelector } from '../../state/userSlice';
-
 interface IFormInputs {
     name: string
     email: string
@@ -12,17 +11,32 @@ interface IFormInputs {
 }
 
 function Register() {
-    const { name, email, loading, error } = useSelector(userSelector);
+    const { accessToken, email, loading, loggedin, error } = useSelector(userSelector);
     const { register, errors, handleSubmit } = useForm<IFormInputs>();
     const dispatch = useDispatch();
+    const history = useHistory();
 
     const onSubmit = (data: IFormInputs) => {
         console.log(JSON.stringify(data));
-        // dispatch(registerUser(data));
+        dispatch(registerUser(data));
     }
 
+    useEffect(() => {
+        if (error) {
+            console.log(error);
+            // toast.error(errorMessage);
+        } else {
+            if (accessToken && !loading) {
+                console.log('finished', email);
+                // history.push('/');
+            }
+        }
+    }, [accessToken])
+
+    if (loading) return (<p>loading...</p>);
+
     return (
-        <>
+        <div>
             <h1>Register</h1>
             <form
                 onSubmit={handleSubmit(onSubmit)}
@@ -45,7 +59,11 @@ function Register() {
                             })}
                         // required
                         />
-                        {errors.name && 'name is required'}
+                        <ErrorMessage
+                            errors={errors}
+                            name="name"
+                            render={({ message }) => <p>{message}</p>}
+                        />
                     </div>
                 </div>
                 <div>
@@ -56,11 +74,20 @@ function Register() {
                         <input
                             id='email'
                             name='email'
-                            type='email'
+                            // type='email'
                             ref={register({
-                                pattern: /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/i,
+                                required: 'Email is required',
+                                // pattern: /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/i,
+                                pattern: {
+                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]{2,3}$/i,
+                                    message: 'Email format is wrong'
+                                } 
                             })}
-                            required
+                        />
+                        <ErrorMessage
+                            errors={errors}
+                            name="email"
+                            render={({ message }) => <p>{message}</p>}
                         />
                     </div>
                 </div>
@@ -74,19 +101,29 @@ function Register() {
                             id='password'
                             name='password'
                             type='password'
-                            ref={register({ required: true })}
-                            required
+                            ref={register({
+                                required: true,
+                                minLength: {
+                                    value: 6,
+                                    message: 'Password should have minimum 6 characters'
+                                }
+                            })}
                         />
                     </div>
+                    <ErrorMessage
+                        errors={errors}
+                        name="password"
+                        render={({ message }) => <p>{message}</p>}
+                    />
                 </div>
                 <div>
                     {loading ? (
                         'Loading...'
                     ) : <button type='submit'>Register</button>}
                 </div>
-                <div> Or <Link to='register'>Login</Link></div>
+                <div> Or <Link to='login'>Login</Link></div>
             </form>
-        </>
+        </div>
     )
 }
 

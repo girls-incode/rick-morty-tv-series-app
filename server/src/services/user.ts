@@ -4,7 +4,15 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user';
 import RefreshToken from '../models/token';
 import db from '../utils/db';
+import { dateTransform } from '../utils/dates';
 import HttpException from './../utils/httpException';
+
+const {
+    REFRESH_TOKEN_EXPIRATION = '7d',
+    ACCESS_TOKEN_EXPIRATION = '15m',
+    REFRESH_TOKEN_SECRET = 'jwts',
+    ACCESS_TOKEN_SECRET = 'jwts'
+} = process.env;
 
 export async function loginService({ email, password }: any) {
     const user:any = await User.findOne({ email });
@@ -28,14 +36,17 @@ export async function registerService(body:any) {
     return setNewTokens(user);
 }
 
-export async function tokenService(token: string) {
+export async function newAccessTokenService(token: string) {
     const oldRefreshToken: any = await RefreshToken.findOne({ token }).populate('user');
     if (!oldRefreshToken || oldRefreshToken.isExpired) throw new HttpException(400, 'Invalid token');
     const { user } = oldRefreshToken;
+    const accessToken = generateAccessToken(user);
 
-    await oldRefreshToken.deleteOne();
-
-    return setNewTokens(user);
+    return {
+        ...userInfo(user),
+        accessToken,
+        refreshToken: token
+    }
 }
 
 async function setNewTokens(user: any) {
@@ -51,21 +62,20 @@ async function setNewTokens(user: any) {
 }
 
 function generateAccessToken(user: any) {
-    return jwt.sign({ sub: user._id, id: user._id }, process.env.ACCESS_TOKEN_SECRET || '', { expiresIn: '30m' });
+    return jwt.sign({ sub: user._id, id: user._id }, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRATION });
 }
 
-function generateRefreshToken(user:any) {
-    // expires in 7 days
+function generateRefreshToken(user: any) {
     return new RefreshToken({
         user: user._id,
-        token: jwt.sign({ id: user._id }, process.env.REFRESH_TOKEN_SECRET || '', { expiresIn: '7d' }),
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        token: jwt.sign({ id: user._id }, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRATION }),
+        expires: dateTransform(REFRESH_TOKEN_EXPIRATION),
     });
 }
 
-function randomTokenString() {
-    return crypto.randomBytes(64).toString('hex');
-}
+// function randomTokenString() {
+//     return crypto.randomBytes(64).toString('hex');
+// }
 
 function hash(password:string) {
     return bcrypt.hashSync(password, 10);

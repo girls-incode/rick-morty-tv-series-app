@@ -6,15 +6,19 @@ import express, {
 import Joi from 'joi';
 import { validateRequest } from '../middleware/http';
 import { verifyToken } from '../middleware/auth';
-
 import {
     loginService,
     getUserByIdService,
     registerService,
     logoutService,
-    tokenService
+    newAccessTokenService
 } from '../services/user';
+import { dateTransform } from '../utils/dates';
 import HttpException from './../utils/httpException';
+
+const {
+    REFRESH_TOKEN_EXPIRATION = '7d',
+} = process.env;
 
 const router = express.Router();
 
@@ -54,17 +58,23 @@ function registerSchema(req: Request, res: Response, next: NextFunction) {
 
 function register(req: Request, res: Response, next: NextFunction) {
     registerService(req.body)
-        .then((user) => res.json(user))
+        .then(({ refreshToken, ...user }: any) => {
+            setTokenCookie(res, refreshToken);
+            res.json(user);
+        })
         .catch(next);
 }
 
-function setTokenCookie(res: Response, token:string) {
-    // create cookie with refresh token that expires in 7 days
-    const cookieOptions = {
-        httpOnly: true,
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-    };
-    res.cookie('refreshToken', token, cookieOptions);
+function setTokenCookie(res: Response, token: string) {
+    try {
+        const cookieOptions = {
+            httpOnly: true,
+            expires: dateTransform(REFRESH_TOKEN_EXPIRATION)
+        };
+        res.cookie('refreshToken', token, cookieOptions);
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 function getById(req: any, res: Response, next: NextFunction) {
@@ -85,7 +95,8 @@ function logout(req: any, res: Response, next: NextFunction) {
 
 function refreshToken(req: any, res: Response, next: NextFunction) {
     const token = req.cookies.refreshToken;
-    tokenService(token)
+    if (!token) next(new HttpException(400, 'Invalid token'));
+    newAccessTokenService(token)
         .then(({ refreshToken, ...user }: any) => {
             setTokenCookie(res, refreshToken);
             res.json(user);

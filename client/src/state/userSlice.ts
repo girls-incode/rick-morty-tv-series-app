@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from './rootReducer';
-
+import axios from 'axios';
 interface Character {
     id: number,
     name: string,
@@ -17,6 +17,7 @@ interface Character {
 }
 
 export interface UserState {
+    loggedin: boolean,
     name: string,
     email: string,
     loading: boolean,
@@ -27,6 +28,7 @@ export interface UserState {
 }
 
 const initUserState: UserState = {
+    loggedin: false,
     name: '',
     email: '',
     loading: false,
@@ -38,69 +40,50 @@ const initUserState: UserState = {
 
 const authUrl = process.env.REACT_APP_AUTH_URL + '/api/v1/users';
 
+const setAuthToken = (token: string) => {
+    if (token) {
+        axios.defaults.headers.common["Authorization"] = token;
+    } else {
+        delete axios.defaults.headers.common["Authorization"];
+    }
+};
+
 export const loginUser = createAsyncThunk(
     'users/login',
-    async ({ email, password }: any, thunkAPI) => {
+    async ({ email, password }: any, { rejectWithValue }) => {
         try {
-            const response = await fetch(
-                authUrl + '/login',
-                {
-                    method: 'POST',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email,
-                        password,
-                    }),
-                }
-            );
-            let data = await response.json();
-            console.log('login', data);
-            if (response.status === 200) {
-                localStorage.setItem('accessToken', data.accessToken);
-                return data;
+            const res: any = await axios.post(authUrl + '/login', { email, password }, { withCredentials: true });
+            if (res.status === 200) {
+                setAuthToken(res.data.refreshToken);
+                return res.data
             }
-            return thunkAPI.rejectWithValue(data);
-        } catch (e) {
-            console.log('Error', e.response.data);
-            thunkAPI.rejectWithValue(e.response.data);
+        } catch (err) {
+            if (!err.response) {
+                throw err
+            }
+            return rejectWithValue(err.response)
         }
     }
 );
 
 export const registerUser = createAsyncThunk(
     'users/registerUser',
-    async ({ name, email, password }: any, thunkAPI) => {
+    async ({ name, email, password }: any, { rejectWithValue }) => {
         try {
-            const response = await fetch(
+            const res: any = await axios.post(
                 authUrl + '/register',
-                {
-                    method: 'POST',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        name,
-                        email,
-                        password,
-                    }),
-                }
+                { name, email, password },
+                { withCredentials: true }
             );
-            let data = await response.json();
-            console.log('data', data);
-
-            if (response.status === 200) {
-                localStorage.setItem('accessToken', data.accessToken);
-                return data;
-            } else {
-                return thunkAPI.rejectWithValue(data);
+            if (res.status === 200) {
+                setAuthToken(res.data.refreshToken);
+                return res.data
             }
-        } catch (e) {
-            console.log('Error', e.response.data);
-            return thunkAPI.rejectWithValue(e.response.data);
+        } catch (err) {
+            if (!err.response) {
+                throw err
+            }
+            return rejectWithValue(err.response)
         }
     }
 );
@@ -114,13 +97,27 @@ export const userSlice = createSlice({
             state.error = '';
             return state;
         },
+        updateUser: (state, { payload }) => {
+            console.log('updateUser', state);
+            return {
+                ...state,
+                loading: false,
+                loggedin: true,
+                error: '',
+                ...payload
+            };
+        }
     },
     extraReducers: {
         [registerUser.fulfilled.type]: (state, { payload }) => {
             console.log('payload', payload);
-            state.loading = false;
-            state.error = '';
-            return { ...state, ...payload };
+            return {
+                ...state,
+                loading: false,
+                loggedin: true,
+                error: '',
+                ...payload
+            }
         },
         [registerUser.pending.type]: (state) => {
             state.loading = true;
@@ -130,20 +127,28 @@ export const userSlice = createSlice({
             state.error = payload.message;
         },
         [loginUser.fulfilled.type]: (state, { payload }) => {
-            state.loading = false;
-            return { ...state, ...payload };
+            return {
+                ...state,
+                loading: false,
+                loggedin: true,
+                error: '',
+                ...payload
+            }
         },
         [loginUser.rejected.type]: (state, { payload }) => {
             console.log('payload', payload);
             state.loading = false;
             state.error = payload.message;
+            // return state
         },
         [loginUser.pending.type]: (state) => {
             state.loading = true;
+            state.loggedin = false;
+            // return state
         },
     },
 });
 
-export const { clearState } = userSlice.actions;
+export const { clearState, updateUser } = userSlice.actions;
 
 export const userSelector = (state: RootState) => state.user;

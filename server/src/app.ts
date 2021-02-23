@@ -16,7 +16,10 @@ import validateEnv from './utils/validateEnv';
 validateEnv();
 db.connect();
 const app: Application = express();
-app.use(cors());
+app.use(cors({
+    credentials: true,
+    origin: process.env.CLIENT_URL || ''
+}));
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

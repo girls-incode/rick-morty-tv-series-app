@@ -14,4 +14,5 @@ db.refreshtokens.drop()
 
 ### To improve
 - make an Authorization Server and an Requests Server, 2 microservices with separate responsabilities
-- add ip and device infos for auth operations 
+- add ip and device infos for auth operations
+- use passport.js to easily add social media login options
