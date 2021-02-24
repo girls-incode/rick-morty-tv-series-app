@@ -20,7 +20,6 @@ const CharacterSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        required: true
     },
     gender: {
         type: String,
@@ -37,11 +36,9 @@ const CharacterSchema = new mongoose.Schema({
     location: {
         name: {
             type: String,
-            required: true
         },
         url: {
             type: String,
-            required: true
         },
     },
     image: {
@@ -50,11 +47,9 @@ const CharacterSchema = new mongoose.Schema({
     episode: [String],
     url: {
         type: String,
-        required: true
     },
     created: {
         type: String,
-        required: true
     }
 });
 

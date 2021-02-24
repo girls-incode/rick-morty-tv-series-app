@@ -21,8 +21,8 @@ app.use(cors({
     origin: process.env.CLIENT_URL || ''
 }));
 app.use(morgan('dev'));
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/characters', characterRoute);

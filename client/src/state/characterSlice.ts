@@ -31,6 +31,8 @@ export const characterSlice = createSlice({
     reducers: {},
     extraReducers: {
         [getCharacters.fulfilled.type]: (state, { payload }) => {
+            console.log(payload);
+
             return {
                 ...state,
                 loading: false,

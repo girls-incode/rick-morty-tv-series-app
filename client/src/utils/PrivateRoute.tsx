@@ -10,7 +10,7 @@ export const PrivateRoute = ({ component: Component, ...rest }) => {
 
     return (<Route
         {...rest}
-        render={(props) => (accessToken ? <Component {...props} /> : loading ? <p>loading...</p> : <Redirect to={{ pathname: '/login', state: { from: props.location } }} />)}
+        render={(props) => (accessToken ? <Component {...props} /> : loading ? <p>loading...</p> : <Redirect to={{ pathname: '/login' }} />)}
     />
     )
 };

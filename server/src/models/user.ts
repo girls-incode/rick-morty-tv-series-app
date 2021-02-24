@@ -15,9 +15,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    favorites: {
-        type: [CharacterSchema.schema]
-    },
+    favorites: [CharacterSchema.schema],
     created: {
         type: Date,
         default: Date.now

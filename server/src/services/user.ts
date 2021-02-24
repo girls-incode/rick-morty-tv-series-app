@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
+import Character from '../models/character';
 import RefreshToken from '../models/token';
 import db from '../utils/db';
 import { dateTransform } from '../utils/dates';
@@ -73,10 +73,6 @@ function generateRefreshToken(user: any) {
     });
 }
 
-// function randomTokenString() {
-//     return crypto.randomBytes(64).toString('hex');
-// }
-
 function hash(password:string) {
     return bcrypt.hashSync(password, 10);
 }
@@ -102,4 +98,23 @@ export async function logoutService(userId: string) {
     try {
         await RefreshToken.deleteOne({ user: userId });
     } catch (e) { console.log(e) }
+}
+
+export async function addFavoriteService(body: any) {
+    console.log(body);
+    const user: any = await User.findOne({ email: body.email });
+
+    if (!user) {
+        throw new HttpException(404, 'User not found');
+    }
+    const favoriteExists = user.favorites.some((item: any) => item.id === body.data.id);
+    if (favoriteExists) throw new HttpException(400, 'The character is already in favorites list');
+    try {
+        const char = new Character(body.data);
+        user.favorites.push(char);
+        await user.save();
+    } catch (error) {
+        throw new HttpException(503, error._message)
+    }
+    return body.data
 }

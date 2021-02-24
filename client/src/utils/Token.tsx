@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { decodeToken } from './auth';
-import { updateUser } from '../state/userSlice';
+import { updateUser, logoutUser } from '../state/userSlice';
 import { useDispatch } from 'react-redux';
-import apiClient, { setAuthToken, apiOptions } from './apiClient';
-import axios from 'axios';
+import apiClient, { setAuthToken } from './apiClient';
+// import axios from 'axios';
 
 function useToken(accessToken: string) {
     const dispatch = useDispatch();
@@ -29,6 +29,7 @@ function useToken(accessToken: string) {
         }
         catch (err) {
             console.log(err);
+            dispatch(logoutUser());
             setLoading(false);
         }
     }

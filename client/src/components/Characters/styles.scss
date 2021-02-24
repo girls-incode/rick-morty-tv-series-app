@@ -1,11 +1,45 @@
+@import '../../assets/css/variables.scss';
+
+@mixin status {
+    display: inline-block;
+    height: 8px;
+    width: 8px;
+    margin-right: 5px;
+    border-radius: 50%;
+}
+
 .list {
     display: grid;
-    grid-template-columns: repeat(3,1fr);
-    gap:10px;
-
+    grid-template-columns: repeat(3, 330px);
+    justify-content: center;
+    gap: 35px;
+    
     li {
-        padding: 10px;
+        padding: 15px 15px 5px;
         border-radius: 10px;
         background-color: #24385b;
+
+        & > * {
+            margin-bottom: 10px
+        }
     }
+
+    img {
+        border-radius: 5px
+    }
+}
+
+.alive {
+    @include status();
+    background: $color-green-dark;
+}
+
+.dead {
+    @include status();
+    background: $color-red;
+}
+
+.unknown {
+    @include status();
+    background: $color-blue-lighter;
 }

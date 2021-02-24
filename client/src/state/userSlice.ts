@@ -90,13 +90,45 @@ export const registerUser = createAsyncThunk(
     }
 );
 
+export const addToFavorites = createAsyncThunk(
+    'users/addToFavorites',
+    async (data: any) => {
+        try {
+            const res: any = await apiClient.post(
+                authUrl + '/add-favorite',
+                data,
+                apiOptions
+            );
+            if (res.status === 200) {
+                return res.data
+            }
+        } catch (err) {
+            return err.message
+        }
+    }
+);
+export const removeFromFavorites = createAsyncThunk(
+    'users/removeFromFavorites',
+    async (data: any) => {
+        try {
+            const res: any = await apiClient.post(
+                authUrl + '/remove-favorite',
+                data,
+                apiOptions
+            );
+            if (res.status === 200) {
+                return res.data
+            }
+        } catch (err) {
+            return err.message
+        }
+    }
+);
+
 export const userSlice = createSlice({
     name: 'user',
     initialState: initUserState,
     reducers: {
-        // logoutUser: (state, { payload }) => {
-
-        // },
         updateUser: (state, { payload }) => {
             return {
                 ...state,
@@ -153,6 +185,24 @@ export const userSlice = createSlice({
             return state
         },
         [logoutUser.pending.type]: (state) => {
+            state.loading = true;
+            return state
+        },
+        [addToFavorites.fulfilled.type]: (state, { payload }) => {
+            return {
+                ...state,
+                loading: false,
+                loggedin: true,
+                error: '',
+                favorites: [...state.favorites, payload]
+            }
+        },
+        [addToFavorites.rejected.type]: (state, { payload }) => {
+            state.loading = false;
+            state.error = payload;
+            return state
+        },
+        [addToFavorites.pending.type]: (state) => {
             state.loading = true;
             return state
         },

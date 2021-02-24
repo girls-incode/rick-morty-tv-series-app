@@ -1,3 +1,5 @@
+@import 'assets/css/variables.scss';
+
 @font-face {
   font-family: 'roboto';
   src: url('/assets/fonts/Roboto-Regular.ttf');
@@ -7,11 +9,18 @@
   src: url('/assets/fonts/Roboto-Bold.ttf');
 }
 
+@mixin hearts {
+  display: inline-block;
+  font-size: 2rem;
+  cursor: pointer;
+  color: white;
+}
+
 body {
     font-size: 1rem;
     font-family: 'roboto', sans-serif, arial;
-    background-color: #121f3d;
-    color: #eff3f8;
+    background-color: $color-blue-dark;
+    color: $color-light;
 }
 
 ul,li,p,
@@ -39,4 +48,49 @@ h2 {
 
 h3 {
    font-size: 1.4rem;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background-color: $color-green;
+  color: $color-blue-dark;
+  font-weight: 700;
+  padding: .75rem 1rem;
+  border-radius: 8px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+a{
+  color: $color-blue-light;
+  text-decoration: none;
+}
+
+.header {
+  display: flex;
+  padding: 20px 0 30px;
+  text-align: center;
+
+  h1 {
+    flex-grow: 1;
+  }
+}
+
+.container {
+  margin: 0 100px;
+}
+
+.heart-empty {
+  &::before {
+    @include hearts();
+    content: "\2661";
+  }
+}
+.heart-fill {
+  &::before {
+    @include hearts();
+    content: "\2665";
+    // color: $color-red;
+  }
 }

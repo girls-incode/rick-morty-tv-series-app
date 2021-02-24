@@ -11,7 +11,8 @@ import {
     getUserByIdService,
     registerService,
     logoutService,
-    newAccessTokenService
+    newAccessTokenService,
+    addFavoriteService
 } from '../services/user';
 import { dateTransform } from '../utils/dates';
 import HttpException from './../utils/httpException';
@@ -26,6 +27,8 @@ router.post('/login', loginSchema, login);
 router.post('/register', registerSchema, register);
 router.post('/refresh-token', refreshToken);
 router.post('/logout', verifyToken, logout);
+router.post('/add-favorite', verifyToken, addFavorite);
+// router.post('/remove-favorite', verifyToken, removeFavorite);
 router.get('/:id', verifyToken, getById);
 
 function loginSchema(req: Request, res: Response, next: NextFunction) {
@@ -102,6 +105,12 @@ function refreshToken(req: any, res: Response, next: NextFunction) {
             setTokenCookie(res, refreshToken);
             res.json(user);
         })
+        .catch(next);
+}
+
+function addFavorite(req: any, res: Response, next: NextFunction) {
+    addFavoriteService(req.body)
+        .then((data: any) => res.json(data))
         .catch(next);
 }
 
