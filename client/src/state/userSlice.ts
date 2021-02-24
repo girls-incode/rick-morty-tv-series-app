@@ -43,7 +43,7 @@ const authUrl = process.env.REACT_APP_AUTH_URL;
 
 export const loginUser = createAsyncThunk(
     'users/login',
-    async ({ email, password }: any, { rejectWithValue }) => {
+    async ({ email, password }: any) => {
         try {
             const res: any = await apiClient.post(authUrl + '/login', { email, password }, apiOptions);
             if (res.status === 200) {
@@ -51,17 +51,29 @@ export const loginUser = createAsyncThunk(
                 return res.data
             }
         } catch (err) {
-            if (!err.response) {
-                throw err
+            return err.message
+        }
+    }
+);
+export const logoutUser = createAsyncThunk(
+    'users/logout',
+    async () => {
+        try {
+            const res: any = await apiClient.post(authUrl + '/logout', apiOptions);
+            if (res.status === 200) {
+                setAuthToken('');
+                console.log(res);
+                return initUserState
             }
-            return rejectWithValue(err.response)
+        } catch (err) {
+            return err.message
         }
     }
 );
 
 export const registerUser = createAsyncThunk(
     'users/registerUser',
-    async ({ name, email, password }: any, { rejectWithValue }) => {
+    async ({ name, email, password }: any) => {
         try {
             const res: any = await apiClient.post(
                 authUrl + '/register',
@@ -73,10 +85,7 @@ export const registerUser = createAsyncThunk(
                 return res.data
             }
         } catch (err) {
-            if (!err.response) {
-                throw err
-            }
-            return rejectWithValue(err.response)
+            return err.message
         }
     }
 );
@@ -85,10 +94,9 @@ export const userSlice = createSlice({
     name: 'user',
     initialState: initUserState,
     reducers: {
-        logout: (state) => {
-            setAuthToken('');
-            return initUserState;
-        },
+        // logoutUser: (state, { payload }) => {
+
+        // },
         updateUser: (state, { payload }) => {
             return {
                 ...state,
@@ -134,9 +142,23 @@ export const userSlice = createSlice({
             state.loading = true;
             state.loggedin = false;
         },
+        [logoutUser.fulfilled.type]: (state, { payload }) => {
+            console.log('logoutUser', payload);
+            return initUserState;
+            // return { ...state, ...payload };
+        },
+        [logoutUser.rejected.type]: (state, { payload }) => {
+            state.loading = false;
+            state.error = payload;
+            return state
+        },
+        [logoutUser.pending.type]: (state) => {
+            state.loading = true;
+            return state
+        },
     },
 });
 
-export const { logout, updateUser } = userSlice.actions;
+export const { updateUser } = userSlice.actions;
 
 export const userSelector = (state: RootState) => state.user;

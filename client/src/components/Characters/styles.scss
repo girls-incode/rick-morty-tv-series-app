@@ -1,0 +1,11 @@
+.list {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap:10px;
+
+    li {
+        padding: 10px;
+        border-radius: 10px;
+        background-color: #24385b;
+    }
+}

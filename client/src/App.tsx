@@ -10,6 +10,7 @@ import { PrivateRoute } from './utils/PrivateRoute';
 import { PublicRoute } from './utils/PublicRoute';
 import useToken from './utils/Token';
 import { updateUser, userSelector } from './state/userSlice';
+import './App.scss';
 
 const App: React.FC = () => {
   return (

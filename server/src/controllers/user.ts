@@ -25,7 +25,7 @@ const router = express.Router();
 router.post('/login', loginSchema, login);
 router.post('/register', registerSchema, register);
 router.post('/refresh-token', refreshToken);
-router.get('/logout', verifyToken, logout);
+router.post('/logout', verifyToken, logout);
 router.get('/:id', verifyToken, getById);
 
 function loginSchema(req: Request, res: Response, next: NextFunction) {
@@ -90,6 +90,7 @@ function getById(req: any, res: Response, next: NextFunction) {
 function logout(req: any, res: Response, next: NextFunction) {
     logoutService(req.user.id).then(() => {
         res.clearCookie('refreshToken');
+        res.status(200).json('Logout success')
     }).catch(next);
 }
 

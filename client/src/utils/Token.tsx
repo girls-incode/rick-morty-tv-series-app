@@ -7,10 +7,11 @@ import axios from 'axios';
 
 function useToken(accessToken: string) {
     const dispatch = useDispatch();
-    let [loading, setLoading] = useState<boolean>(true);
+    let [loading, setLoading] = useState<boolean>(false);
     const url = process.env.REACT_APP_AUTH_URL;
 
     const getToken = async () => {
+        setLoading(true);
         try {
             const res = await apiClient.post(url + '/refresh-token');
             const { data } = res;

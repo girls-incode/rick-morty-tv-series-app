@@ -99,5 +99,7 @@ function userInfo(user:any) {
 }
 
 export async function logoutService(userId: string) {
-    await RefreshToken.deleteOne({ user: userId });
+    try {
+        await RefreshToken.deleteOne({ user: userId });
+    } catch (e) { console.log(e) }
 }
