@@ -7,18 +7,22 @@ function Character({ data, isfav, email }: any) {
     return (
         <li>
             <img src={image} width='300' alt={name} />
-            <h2>
-                <Link to={{
-                    pathname: `/character/${id}`,
-                    data,
-                    isfav,
-                    email
-                }}>{name}</Link>
-            </h2>
-            <div><span className={status.toLowerCase()}></span>{status} - {species}</div>
-            <div>{gender}</div>
-            <div>{location.name}</div>
-            <div><span className={isfav ? 'heart-fill' : ''}></span></div>
+            <article className='character-summary'>
+                <div className='d-grid d-col character-header'>
+                    <h2>
+                        <Link to={{
+                            pathname: `/character/${id}`,
+                            data,
+                            isfav,
+                            email
+                        }}>{name}</Link>
+                    </h2>
+                    <span className={isfav ? 'heart-fill' : ''}></span>
+                </div>
+                <div><span className={status.toLowerCase()}></span>{status} - {species}</div>
+                <div>{gender}</div>
+                <div>{location.name}</div>
+            </article>
         </li>
     )
 }

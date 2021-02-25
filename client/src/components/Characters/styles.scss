@@ -18,14 +18,6 @@
         padding: 15px 15px 5px;
         border-radius: 10px;
         background-color: #24385b;
-
-        & > * {
-            margin-bottom: 10px
-        }
-    }
-
-    img {
-        border-radius: 5px
     }
 }
 
@@ -42,4 +34,52 @@
 .unknown {
     @include status();
     background: $color-blue-lighter;
+}
+
+.character {
+    header {
+        margin-bottom: 30px;
+    }
+    .character-summary {
+        margin-left: 20px;
+    }
+}
+
+.character-summary {
+    padding: 5px;
+    > * {
+        margin-bottom: 10px
+    }
+}
+
+.character-header {
+    grid-template-columns: 1fr auto;
+    margin: 10px 0 15px;
+}
+
+.back {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.episodes {
+    h3 {
+        margin-bottom: 20px;
+    }
+    ul {
+        grid-template-columns: repeat(6, 1fr);
+        display: grid;
+        gap: 5px
+    }
+}
+
+.episode {
+    a {
+        &::before {
+            content: "\02771";
+            margin-right: 10px;
+            opacity: 0.4;
+        }
+    }
 }

@@ -1,37 +1,51 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Fragment } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useToasts } from 'react-toast-notifications';
 import { characterSelector, getCharacters } from '../../state/characterSlice';
-import { registerUser, userSelector, logoutUser } from '../../state/userSlice';
+import { userSelector } from '../../state/userSlice';
 import './styles.scss';
 import Character from './Character';
 import Nav from '../Nav/Nav';
+import Loader from './../Loader/Loader';
 
 function Characters() {
     const data = useSelector(characterSelector);
-    const { accessToken, loggedin, favorites, email } = useSelector(userSelector);
+    const { accessToken, loggedin, favorites, email, error } = useSelector(userSelector);
+    const { addToast } = useToasts();
     const dispatch = useDispatch();
 
     useEffect(() => {
+        console.log('loadddd 1..');
         if (accessToken) {
             dispatch(getCharacters())
         }
     }, []);
+
+    useEffect(() => {
+        console.log('loadddd....');
+    });
+
+    useEffect(() => {
+        const err = error || data.error;
+        if (err) {
+            addToast(err, { appearance: 'error' });
+        }
+    }, [error, data.error]);
 
     function isFavorite(list: Array<any>, id: string): boolean {
         return list.some((item: any) => item.id === id)
     }
 
     return (
-        <>
+        <Fragment>
             <Nav />
             <main className='container'>
-            <h2>Characters...</h2>
-            {loggedin && (
-                <>
-                    {data.loading && (<div>Loading.....</div>)}
-                    {!data.loading && data.characters && (
+                {loggedin && (
+                    <>
+                        {data.loading && <Loader />}
+                        {!data.loading && data.characters && (
                             <>
-                            <ul className='list'>
+                                <ul className='list'>
                                     {data.characters.map((char: any) => {
                                         return <Character
                                             key={char.id}
@@ -39,13 +53,13 @@ function Characters() {
                                             email={email}
                                             isfav={isFavorite(favorites, char.id)} />
                                     })}
-                            </ul>
-                        </>
-                    )}
-                </>
+                                </ul>
+                            </>
+                        )}
+                    </>
                 )}
             </main>
-        </>
+        </Fragment>
     )
 }
 

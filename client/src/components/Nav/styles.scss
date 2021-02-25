@@ -1,0 +1,18 @@
+@import '../../assets/css/variables.scss';
+
+.header {
+  position: relative;
+  padding: 20px 0 30px;
+  background-color: $color-blue-1;
+  
+  h1 {
+    text-align: center;
+  }
+
+  button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 15px;
+  }
+}

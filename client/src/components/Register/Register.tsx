@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 import { ErrorMessage } from "@hookform/error-message";
 import { Link, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { useToasts } from 'react-toast-notifications';
 import { registerUser, userSelector } from '../../state/userSlice';
+import Nav from './../Nav/Nav';
 interface IFormInputs {
     name: string
     email: string
@@ -11,8 +13,9 @@ interface IFormInputs {
 }
 
 function Register() {
-    const { accessToken, email, loading, loggedin, error } = useSelector(userSelector);
+    const { loading, loggedin, error } = useSelector(userSelector);
     const { register, errors, handleSubmit } = useForm<IFormInputs>();
+    const { addToast } = useToasts();
     const dispatch = useDispatch();
     const history = useHistory();
 
@@ -20,108 +23,107 @@ function Register() {
         dispatch(registerUser(data));
     }
 
-    // useEffect(() => {
-    //     if (error) {
-    //         console.log(error);
-    //         // toast.error(errorMessage);
-    //     } else {
-    //         if (accessToken && !loading) {
-    //             // history.push('/');
-    //         }
-    //     }
-    // }, [accessToken])
+    useEffect(() => {
+        if (error) {
+            addToast(error, { appearance: 'error' });
+        }
+        else {
+            if (loggedin && !loading) {
+                history.push('/');
+            }
+        }
+    }, [error]);
 
-    if (loading) return (<p>loading...</p>);
+    function displayError(message: string) {
+        return <p className='text-blue'>{message}</p>
+    }
 
     return (
-        <div>
-            <h1>Register</h1>
-            <form
-                onSubmit={handleSubmit(onSubmit)}
-                method='POST'>
-                <div>
-                    <label htmlFor='name'>
-                        Name
-                    </label>
-                    <div>
-                        <input
-                            id='name'
-                            name='name'
-                            type='text'
-                            ref={register({
-                                required: 'Name is required',
-                                maxLength: {
-                                    value: 15,
-                                    message: 'This input exceed maxLength'
-                                }
-                            })}
-                        // required
-                        />
-                        <ErrorMessage
-                            errors={errors}
-                            name="name"
-                            render={({ message }) => <p>{message}</p>}
-                        />
-                    </div>
-                </div>
-                <div>
-                    <label htmlFor='email'>
-                        Email address
-                    </label>
-                    <div>
-                        <input
-                            id='email'
-                            name='email'
-                            // type='email'
-                            ref={register({
-                                required: 'Email is required',
-                                // pattern: /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/i,
-                                pattern: {
-                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]{2,3}$/i,
-                                    message: 'Email format is wrong'
-                                } 
-                            })}
-                        />
-                        <ErrorMessage
-                            errors={errors}
-                            name="email"
-                            render={({ message }) => <p>{message}</p>}
-                        />
-                    </div>
-                </div>
-                <div>
-                    <label
-                        htmlFor='password'>
-                        Password
-                    </label>
-                    <div>
-                        <input
-                            id='password'
-                            name='password'
-                            type='password'
-                            ref={register({
-                                required: true,
-                                minLength: {
-                                    value: 6,
-                                    message: 'Password should have minimum 6 characters'
-                                }
-                            })}
-                        />
-                    </div>
-                    <ErrorMessage
-                        errors={errors}
-                        name="password"
-                        render={({ message }) => <p>{message}</p>}
-                    />
-                </div>
-                <div>
-                    {loading ? (
-                        'Loading...'
-                    ) : <button type='submit'>Register</button>}
-                </div>
-                <div> Or <Link to='login'>Login</Link></div>
-            </form>
-        </div>
+        <Fragment>
+            <Nav />
+            <main className='container justify-center'>
+                <section className='auth'>
+                    <h2 className='mb-2'>Register</h2>
+                    <form
+                        onSubmit={handleSubmit(onSubmit)}
+                        method='POST'>
+                        <div>
+                            <label htmlFor='name'>Name</label>
+                            <div className='form-control'>
+                                <input
+                                    id='name'
+                                    name='name'
+                                    type='text'
+                                    ref={register({
+                                        required: true,
+                                        maxLength: {
+                                            value: 15,
+                                            message: 'This input exceed max length'
+                                        }
+                                    })}
+                                />
+                                <ErrorMessage
+                                    errors={errors}
+                                    name="name"
+                                    render={({ message }) => displayError(message)}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label htmlFor='email'>Email</label>
+                            <div className='form-control'>
+                                <input
+                                    id='email'
+                                    name='email'
+                                    ref={register({
+                                        required: true,
+                                        pattern: {
+                                            value: /^[^\s@]+@[^\s@]+\.[^\s@]{2,3}$/i,
+                                            message: 'Email format is wrong'
+                                        }
+                                    })}
+                                />
+                                <ErrorMessage
+                                    errors={errors}
+                                    name="email"
+                                    render={({ message }) => displayError(message)}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label htmlFor='password'>Password</label>
+                            <div className='form-control'>
+                                <input
+                                    id='password'
+                                    name='password'
+                                    type='password'
+                                    ref={register({
+                                        required: true,
+                                        minLength: {
+                                            value: 6,
+                                            message: 'Password should have minimum 6 characters'
+                                        }
+                                    })}
+                                />
+                            </div>
+                            <ErrorMessage
+                                errors={errors}
+                                name="password"
+                                render={({ message }) => displayError(message)}
+                            />
+                        </div>
+                        <div className='d-grid'>
+                            <button type="submit">
+                                Register
+                        </button>
+                            <div className='mt-1 text-blue'>
+                                Have an account ? <Link to="login">Login</Link>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </main>
+        </Fragment>
     )
 }
 

@@ -12,7 +12,8 @@ import {
     registerService,
     logoutService,
     newAccessTokenService,
-    addFavoriteService
+    addFavoriteService,
+    removeFavoriteService
 } from '../services/user';
 import { dateTransform } from '../utils/dates';
 import HttpException from './../utils/httpException';
@@ -28,7 +29,7 @@ router.post('/register', registerSchema, register);
 router.post('/refresh-token', refreshToken);
 router.post('/logout', verifyToken, logout);
 router.post('/add-favorite', verifyToken, addFavorite);
-// router.post('/remove-favorite', verifyToken, removeFavorite);
+router.post('/remove-favorite', verifyToken, removeFavorite);
 router.get('/:id', verifyToken, getById);
 
 function loginSchema(req: Request, res: Response, next: NextFunction) {
@@ -37,7 +38,7 @@ function loginSchema(req: Request, res: Response, next: NextFunction) {
         password: Joi.string().min(6).required(),
     });
 
-    validateRequest(req, next, schema);
+    validateRequest(req, res, next, schema);
 }
 
 function login(req: Request, res: Response, next: NextFunction) {
@@ -47,7 +48,7 @@ function login(req: Request, res: Response, next: NextFunction) {
             setTokenCookie(res, refreshToken);
             res.json(user);
         })
-        .catch(next);
+        .catch(err => res.status(err.status).json({ message: err.message }))
 }
 
 function registerSchema(req: Request, res: Response, next: NextFunction) {
@@ -56,7 +57,7 @@ function registerSchema(req: Request, res: Response, next: NextFunction) {
         email: Joi.string().email().required(),
         password: Joi.string().min(6).required(),
     });
-    validateRequest(req, next, schema);
+    validateRequest(req, res, next, schema);
 }
 
 function register(req: Request, res: Response, next: NextFunction) {
@@ -65,7 +66,7 @@ function register(req: Request, res: Response, next: NextFunction) {
             setTokenCookie(res, refreshToken);
             res.json(user);
         })
-        .catch(next);
+        .catch(err => res.status(err.status).json({ message: err.message }))
 }
 
 function setTokenCookie(res: Response, token: string) {
@@ -87,31 +88,38 @@ function getById(req: any, res: Response, next: NextFunction) {
 
     getUserByIdService(req.params.id)
         .then(user => user ? res.json(user) : res.sendStatus(404))
-        .catch(next);
+        .catch(err => res.status(err.status).json({ message: err.message }))
 }
 
 function logout(req: any, res: Response, next: NextFunction) {
     logoutService(req.user.id).then(() => {
         res.clearCookie('refreshToken');
         res.status(200).json('Logout success')
-    }).catch(next);
+    }).catch(err => res.status(err.status).json({ message: err.message }))
 }
 
 function refreshToken(req: any, res: Response, next: NextFunction) {
     const token = req.cookies.refreshToken;
     if (!token) next(new HttpException(400, 'Invalid token'));
+    // if (!token) res.status(400).json({ message: 'Invalid token' });
     newAccessTokenService(token)
         .then(({ refreshToken, ...user }: any) => {
             setTokenCookie(res, refreshToken);
             res.json(user);
         })
-        .catch(next);
+        .catch(next)
 }
 
 function addFavorite(req: any, res: Response, next: NextFunction) {
     addFavoriteService(req.body)
         .then((data: any) => res.json(data))
-        .catch(next);
+        .catch(err => res.status(err.status).json({ message: err.message }))
+}
+
+function removeFavorite(req: any, res: Response, next: NextFunction) {
+    removeFavoriteService(req.body)
+        .then((data: any) => res.json(data))
+        .catch(err => res.status(err.status).json({ message: err.message }))
 }
 
 export default router;

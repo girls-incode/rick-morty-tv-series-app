@@ -24,8 +24,8 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use('/api/v1/users', userRoute);
-app.use('/api/v1/characters', characterRoute);
+app.use('/api/v1/user', userRoute);
+app.use('/api/v1/character', characterRoute);
 
 const swaggerDocument = YAML.load('./swagger.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

@@ -3,15 +3,14 @@ import { decodeToken } from './auth';
 import { updateUser, logoutUser } from '../state/userSlice';
 import { useDispatch } from 'react-redux';
 import apiClient, { setAuthToken } from './apiClient';
-// import axios from 'axios';
 
 function useToken(accessToken: string) {
     const dispatch = useDispatch();
-    let [loading, setLoading] = useState<boolean>(false);
+    let [loading, setLoading] = useState<boolean>(true);
     const url = process.env.REACT_APP_AUTH_URL;
 
     const getToken = async () => {
-        setLoading(true);
+        // setLoading(true);
         try {
             const res = await apiClient.post(url + '/refresh-token');
             const { data } = res;
@@ -29,7 +28,6 @@ function useToken(accessToken: string) {
         }
         catch (err) {
             console.log(err);
-            dispatch(logoutUser());
             setLoading(false);
         }
     }

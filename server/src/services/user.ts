@@ -101,17 +101,34 @@ export async function logoutService(userId: string) {
 }
 
 export async function addFavoriteService(body: any) {
-    console.log(body);
     const user: any = await User.findOne({ email: body.email });
 
     if (!user) {
         throw new HttpException(404, 'User not found');
     }
     const favoriteExists = user.favorites.some((item: any) => item.id === body.data.id);
-    if (favoriteExists) throw new HttpException(400, 'The character is already in favorites list');
+    if (favoriteExists) throw new HttpException(400, 'The character is already in favorite list');
     try {
         const char = new Character(body.data);
         user.favorites.push(char);
+        await user.save();
+    } catch (error) {
+        throw new HttpException(503, error._message)
+    }
+    return body.data
+}
+
+export async function removeFavoriteService(body: any) {
+    const user: any = await User.findOne({ email: body.email });
+
+    if (!user) {
+        throw new HttpException(404, 'User not found');
+    }
+    const newList = user.favorites.filter((item: any) => item.id !== body.data.id)
+    const notExists = newList.length === user.favorites.length;
+    if (notExists) throw new HttpException(400, 'The character is not in favorite list');
+    try {
+        user.favorites = newList;
         await user.save();
     } catch (error) {
         throw new HttpException(503, error._message)

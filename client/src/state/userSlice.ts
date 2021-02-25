@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from './rootReducer';
 import apiClient, { setAuthToken, apiOptions } from './../utils/apiClient';
-import axios from 'axios';
+import axiosErrorHandler from './../utils/errors';
 interface Character {
     id: number,
     name: string,
@@ -22,7 +22,7 @@ export interface UserState {
     name: string,
     email: string,
     loading: boolean,
-    error: string,
+    error: string | null | undefined,
     favorites: Array<Character>,
     accessToken: string,
     refreshToken: string,
@@ -42,16 +42,17 @@ const initUserState: UserState = {
 const authUrl = process.env.REACT_APP_AUTH_URL;
 
 export const loginUser = createAsyncThunk(
-    'users/login',
-    async ({ email, password }: any) => {
+    'users/loginUser',
+    async ({ email, password }: any, { rejectWithValue }) => {
         try {
-            const res: any = await apiClient.post(authUrl + '/login', { email, password }, apiOptions);
+            const res = await apiClient.post(authUrl + '/login', { email, password }, apiOptions);
             if (res.status === 200) {
                 setAuthToken(res.data.accessToken);
                 return res.data
             }
-        } catch (err) {
-            return err.message
+        }
+        catch (err) {
+            return rejectWithValue(err?.response?.data?.message || err)
         }
     }
 );
@@ -73,7 +74,7 @@ export const logoutUser = createAsyncThunk(
 
 export const registerUser = createAsyncThunk(
     'users/registerUser',
-    async ({ name, email, password }: any) => {
+    async ({ name, email, password }: any, { rejectWithValue }) => {
         try {
             const res: any = await apiClient.post(
                 authUrl + '/register',
@@ -85,7 +86,7 @@ export const registerUser = createAsyncThunk(
                 return res.data
             }
         } catch (err) {
-            return err.message
+            return rejectWithValue(err?.response?.data?.message || err)
         }
     }
 );
@@ -151,10 +152,12 @@ export const userSlice = createSlice({
         },
         [registerUser.pending.type]: (state) => {
             state.loading = true;
+            state.loggedin = false;
+            state.error = '';
         },
         [registerUser.rejected.type]: (state, { payload }) => {
             state.loading = false;
-            state.error = payload.message;
+            state.error = payload;
         },
         [loginUser.fulfilled.type]: (state, { payload }) => {
             return {
@@ -167,17 +170,16 @@ export const userSlice = createSlice({
         },
         [loginUser.rejected.type]: (state, { payload }) => {
             state.loading = false;
-            state.error = payload.message;
-            // return state
+            state.error = payload;
         },
         [loginUser.pending.type]: (state) => {
             state.loading = true;
             state.loggedin = false;
+            state.error = '';
         },
         [logoutUser.fulfilled.type]: (state, { payload }) => {
             console.log('logoutUser', payload);
             return initUserState;
-            // return { ...state, ...payload };
         },
         [logoutUser.rejected.type]: (state, { payload }) => {
             state.loading = false;
@@ -203,6 +205,25 @@ export const userSlice = createSlice({
             return state
         },
         [addToFavorites.pending.type]: (state) => {
+            state.loading = true;
+            return state
+        },
+        [removeFromFavorites.fulfilled.type]: (state, { payload }) => {
+            const newList = state.favorites.filter((item: any) => item.id !== payload.id);
+            return {
+                ...state,
+                loading: false,
+                loggedin: true,
+                error: '',
+                favorites: newList
+            }
+        },
+        [removeFromFavorites.rejected.type]: (state, { payload }) => {
+            state.loading = false;
+            state.error = payload;
+            return state
+        },
+        [removeFromFavorites.pending.type]: (state) => {
             state.loading = true;
             return state
         },

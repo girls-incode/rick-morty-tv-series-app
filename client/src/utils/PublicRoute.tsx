@@ -2,6 +2,7 @@ import React from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { userSelector } from '../state/userSlice';
+import Loader from '../components/Loader/Loader';
 import useToken from './Token';
 
 export const PublicRoute = ({ component: Component, ...rest }) => {
@@ -10,7 +11,7 @@ export const PublicRoute = ({ component: Component, ...rest }) => {
 
     return (<Route
         {...rest}
-        render={(props) => (accessToken === '' && !loading ? <Component {...props} /> : loading ? <p>loading...</p> : <Redirect to={{ pathname: '/' }} />)}
+        render={(props) => (!accessToken && !loading ? <Component {...props} /> : loading ? <Loader /> : <Redirect to={{ pathname: '/' }} />)}
     />
     )
 };

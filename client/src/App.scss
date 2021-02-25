@@ -17,7 +17,9 @@
 }
 
 body {
-    font-size: 1rem;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
     font-family: 'roboto', sans-serif, arial;
     background-color: $color-blue-dark;
     color: $color-light;
@@ -50,35 +52,50 @@ h3 {
    font-size: 1.4rem;
 }
 
-button {
-  cursor: pointer;
-  border: none;
-  background-color: $color-green;
-  color: $color-blue-dark;
-  font-weight: 700;
-  padding: .75rem 1rem;
-  border-radius: 8px;
-  letter-spacing: .5px;
-  text-transform: uppercase;
+p {
+  margin-bottom: 5px;
 }
 
-a{
+button {
+  padding: .75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-family: 'roboto-bold';
+  font-size: 1rem;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  background-color: $color-green;
+  color: $color-blue-dark;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $color-green-light;
+  }
+}
+
+a {
   color: $color-blue-light;
   text-decoration: none;
 }
 
-.header {
-  display: flex;
-  padding: 20px 0 30px;
-  text-align: center;
+img {
+    border-radius: 5px
+}
 
-  h1 {
-    flex-grow: 1;
-  }
+.text-blue {
+  color: $color-blue-lighter;
+}
+.text-center {
+  text-align: center;
+}
+
+.justify-center {
+  justify-content: center;
 }
 
 .container {
-  margin: 0 100px;
+  position: relative;
+  margin: 100px;
 }
 
 .heart-empty {
@@ -91,6 +108,93 @@ a{
   &::before {
     @include hearts();
     content: "\2665";
-    // color: $color-red;
+  }
+}
+
+input {
+  min-width: 275px;
+  padding: .75rem 1rem;
+  margin: 8px 0;
+  border: 1px solid $color-blue;
+  border-radius: 8px;
+  background-color: $color-blue-darker;
+  color: white;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px RGB(51 177 255 / 32%);
+    border: 1px solid $color-blue-light;
+  }
+}
+
+.form-control {
+  margin-bottom: 10px;
+}
+
+.mb-2 {
+  margin-bottom: 20px;
+}
+.mt-1 {
+  margin-top: 10px;
+}
+.mr-1 {
+  margin-right: 10px;
+}
+.mr-2 {
+  margin-right: 20px;
+}
+
+.d-grid {
+  display: grid;
+}
+.d-col {
+  grid-template-columns: auto;
+}
+.d-row {
+  grid-template-rows: auto;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.auth {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+body::-webkit-scrollbar {
+    width: 8px;
+    background-color: $color-blue-lighter;
+}
+body::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px $color-blue;
+}
+body::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: $color-blue-1;
+}
+
+.react-toast-notifications__toast__icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.react-toast-notifications__toast__content {
+  display: flex;
+  align-items: center;
+}
+
+.react-toast-notifications__toast--success {
+  .react-toast-notifications__toast__icon-wrapper {
+    background-color: $color-green;
+  }
+  .react-toast-notifications__toast__content,
+  .react-toast-notifications__toast__dismiss-button {
+    background-color: $color-green-light;
+    opacity: 1;
   }
 }
