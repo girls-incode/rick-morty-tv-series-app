@@ -24,7 +24,7 @@ function CharacterDetails({ location }) {
         if (isfav) {
             setCharInfo({ data, isfav: false })
             dispatch(removeFromFavorites({ data, email }));
-            addToast('Character removed from favorites', { appearance: 'success' });
+            addToast('Character removed from favorites', { appearance: 'warning' });
         } else {
             setCharInfo({ data, isfav: true })
             dispatch(addToFavorites({ data, email }));
@@ -75,7 +75,7 @@ function CharacterDetails({ location }) {
                             <ul>
                                 {charInfo.data.episode.map((episode: string, i: number) => (
                                     <li className='episode' key={i}>
-                                        <a href={episode} target='_blank' rel='noreferrer'>Episode No.{i}</a>
+                                        <a href={episode} target='_blank' rel='noreferrer'>Episode no.{i + 1}</a>
                                     </li>
                                 ))}
                             </ul>

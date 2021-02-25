@@ -10,7 +10,7 @@
 
 .list {
     display: grid;
-    grid-template-columns: repeat(3, 330px);
+    grid-template-columns: repeat(auto-fit, 330px);
     justify-content: center;
     gap: 35px;
     
@@ -39,14 +39,21 @@
 .character {
     header {
         margin-bottom: 30px;
+        @media screen and (max-width:620px) {
+            flex-direction: column;
+        }
     }
     .character-summary {
         margin-left: 20px;
+        @media screen and (max-width:620px) {
+            margin: 0;
+        }
     }
 }
 
 .character-summary {
     padding: 5px;
+
     > * {
         margin-bottom: 10px
     }
@@ -68,7 +75,7 @@
         margin-bottom: 20px;
     }
     ul {
-        grid-template-columns: repeat(6, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         display: grid;
         gap: 5px
     }
