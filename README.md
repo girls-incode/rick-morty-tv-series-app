@@ -27,6 +27,7 @@ React-Express app that consume the public API of Rick & Morty: https://rickandmo
 ## API endpoints
 - http://localhost:4000/api/v1/user/login
 - http://localhost:4000/api/v1/user/register
+- http://localhost:4000/api/v1/user/refresh-token
 - http://localhost:4000/api/v1/user/logout
 - http://localhost:4000/api/v1/user/add-favorite
 - http://localhost:4000/api/v1/user/remove-favorite
