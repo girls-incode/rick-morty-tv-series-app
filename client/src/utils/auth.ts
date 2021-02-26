@@ -8,7 +8,7 @@ export function decodeToken(token: string) {
             return JSON.parse(atob(base64));
         }
     } catch (error) {
-        return null;
+        return null
     }
 }
 
@@ -22,5 +22,5 @@ function isTokenExpired(token) {
         result = expirationDate.valueOf() < new Date().valueOf();
     }
 
-    return result;
+    return result
 }

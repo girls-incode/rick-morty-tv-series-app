@@ -1,7 +1,7 @@
 import React, { useEffect, Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 import { ErrorMessage } from "@hookform/error-message";
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useToasts } from 'react-toast-notifications';
 import { registerUser, userSelector } from '../../state/userSlice';
@@ -13,11 +13,10 @@ interface IFormInputs {
 }
 
 function Register() {
-    const { loading, loggedin, error } = useSelector(userSelector);
+    const { error } = useSelector(userSelector);
     const { register, errors, handleSubmit } = useForm<IFormInputs>();
     const { addToast } = useToasts();
     const dispatch = useDispatch();
-    const history = useHistory();
 
     const onSubmit = (data: IFormInputs) => {
         dispatch(registerUser(data));
@@ -26,11 +25,6 @@ function Register() {
     useEffect(() => {
         if (error) {
             addToast(error, { appearance: 'error' });
-        }
-        else {
-            if (loggedin && !loading) {
-                history.push('/');
-            }
         }
     }, [error]);
 

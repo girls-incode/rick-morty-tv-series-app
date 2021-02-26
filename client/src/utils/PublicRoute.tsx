@@ -11,7 +11,9 @@ export const PublicRoute = ({ component: Component, ...rest }) => {
 
     return (<Route
         {...rest}
-        render={(props) => (!accessToken && !loading ? <Component {...props} /> : loading ? <Loader /> : <Redirect to={{ pathname: '/' }} />)}
+        render={(props) => (!accessToken && !loading ?
+            <Component {...props} /> :
+            loading ? <Loader /> : <Redirect to={{ pathname: '/' }} />)}
     />
     )
 };

@@ -7,11 +7,12 @@ import useToken from './Token';
 
 export const PrivateRoute = ({ component: Component, ...rest }) => {
     let { accessToken } = useSelector(userSelector);
-    const loading = useToken(accessToken);
+    const loading: boolean = useToken(accessToken);
 
     return (<Route
         {...rest}
-        render={(props) => (accessToken ? <Component {...props} /> : loading ? <Loader /> : <Redirect to={{ pathname: '/login' }} />)}
+        render={(props) => (accessToken ? <Component {...props} /> :
+            loading ? <Loader /> : <Redirect to={{ pathname: '/login' }} />)}
     />
     )
 };

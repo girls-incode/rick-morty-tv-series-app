@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import { ErrorMessage } from "@hookform/error-message";
 import { useToasts } from 'react-toast-notifications';
 import { useSelector, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import { loginUser, userSelector } from '../../state/userSlice';
 import Nav from './../Nav/Nav';
 interface IFormInputs {
@@ -14,9 +13,8 @@ interface IFormInputs {
 
 const Login = () => {
     const dispatch = useDispatch();
-    const history = useHistory();
     const { register, errors, handleSubmit } = useForm<IFormInputs>();
-    const { loggedin, loading, error } = useSelector(userSelector);
+    const { error } = useSelector(userSelector);
     const { addToast } = useToasts();
 
     const onSubmit = async (data: any) => {
@@ -28,15 +26,9 @@ const Login = () => {
     }
 
     useEffect(() => {
-        console.log('loginerr:', error);
         if (error) {
             addToast(error, { appearance: 'error' });
         }
-        // else {
-        //     if (loggedin && !loading) {
-        //         history.push('/');
-        //     }
-        // }
     }, [error]);
 
     return (

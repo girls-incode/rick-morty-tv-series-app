@@ -1,10 +1,16 @@
-import React from 'react'
+import React from 'react';
+import { useHistory } from 'react-router-dom';
 
 function NotFound() {
+    let history = useHistory();
+
     return (
-        <div>
+        <main className='container justify-center'>
+            <section className='auth'>
             <h1>Not Found</h1>
-        </div>
+                <button onClick={() => history.goBack()}>Back</button>
+            </section>
+        </main>
     )
 }
 

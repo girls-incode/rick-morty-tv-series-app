@@ -7,24 +7,24 @@ import CharacterDetails from './components/Characters/CharacterDetails';
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
 import NotFound from './components/NotFound/NotFound';
-import store from './state/store';
 import { PrivateRoute } from './utils/PrivateRoute';
 import { PublicRoute } from './utils/PublicRoute';
-import useToken from './utils/Token';
-import { updateUser, userSelector } from './state/userSlice';
+import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 
 const App: React.FC = () => {
   return (
     <div className='app'>
       <ToastProvider autoDismiss placement='bottom-right'>
-      <Switch>
-          <PrivateRoute exact component={Characters} path='/' />
-          <PrivateRoute exact component={CharacterDetails} path='/character/:id' />
-          <PublicRoute exact component={Login} path='/login' />
-          <PublicRoute exact component={Register} path='/register' />
-          <Route component={NotFound} />
-      </Switch>
+        <BrowserRouter>
+          <Switch>
+            <PrivateRoute component={Characters} path='/' exact />
+            <PrivateRoute component={CharacterDetails} path='/character/:id' />
+            <PublicRoute component={Login} path='/login' />
+            <PublicRoute component={Register} path='/register' />
+            <Route component={NotFound} />
+          </Switch>
+        </BrowserRouter>
       </ToastProvider>
     </div>
   );

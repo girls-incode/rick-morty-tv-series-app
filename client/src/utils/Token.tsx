@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { decodeToken } from './auth';
-import { updateUser, logoutUser } from '../state/userSlice';
+import { updateUser } from '../state/userSlice';
 import { useDispatch } from 'react-redux';
 import apiClient, { setAuthToken } from './apiClient';
 
@@ -10,18 +10,18 @@ function useToken(accessToken: string) {
     const url = process.env.REACT_APP_AUTH_URL;
 
     const getToken = async () => {
-        // setLoading(true);
         try {
             const res = await apiClient.post(url + '/refresh-token');
             const { data } = res;
-
+            
             const token: string = data.accessToken;
-            // const decoded: any = decodeToken(token);
-            // const expires = decoded.exp;
+
             setAuthToken(token);
             dispatch(updateUser(data));
             setLoading(false);
-
+            
+            // const decoded: any = decodeToken(token);
+            // const expires = decoded.exp;
             // setTimeout(() => {
             //   refreshToken()
             // }, (expires * 1000) - 500)
@@ -33,8 +33,12 @@ function useToken(accessToken: string) {
     }
 
     useEffect(() => {
-        if (!accessToken) {
+        const setheaders = localStorage.getItem('atoken');
+        if (setheaders && !accessToken) {
             getToken()
+        }
+        else {
+            setLoading(false);
         }
     }, []);
 

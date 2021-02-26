@@ -15,15 +15,10 @@ function Characters() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        console.log('loadddd 1..');
         if (accessToken) {
             dispatch(getCharacters())
         }
     }, []);
-
-    useEffect(() => {
-        console.log('loadddd....');
-    });
 
     useEffect(() => {
         const err = error || data.error;

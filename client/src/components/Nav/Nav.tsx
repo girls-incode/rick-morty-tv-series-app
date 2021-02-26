@@ -4,7 +4,7 @@ import { userSelector, logoutUser } from '../../state/userSlice';
 import './styles.scss';
 
 function Nav(props) {
-    const { accessToken, loggedin } = useSelector(userSelector);
+    const { loggedin } = useSelector(userSelector);
     const dispatch = useDispatch();
 
     const handleLogut = () => {

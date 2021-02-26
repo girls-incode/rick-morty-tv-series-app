@@ -48,6 +48,7 @@ export const loginUser = createAsyncThunk(
             const res = await apiClient.post(authUrl + '/login', { email, password }, apiOptions);
             if (res.status === 200) {
                 setAuthToken(res.data.accessToken);
+                localStorage.setItem('atoken', '1');
                 return res.data
             }
         }
@@ -58,16 +59,17 @@ export const loginUser = createAsyncThunk(
 );
 export const logoutUser = createAsyncThunk(
     'users/logout',
-    async () => {
+    async (_, { rejectWithValue }) => {
         try {
             const res: any = await apiClient.post(authUrl + '/logout', apiOptions);
             if (res.status === 200) {
                 setAuthToken('');
+                localStorage.removeItem('atoken');
                 console.log(res);
                 return initUserState
             }
         } catch (err) {
-            return err.message
+            return rejectWithValue(err?.response?.data?.message || err)
         }
     }
 );
@@ -82,6 +84,7 @@ export const registerUser = createAsyncThunk(
                 apiOptions
             );
             if (res.status === 200) {
+                localStorage.setItem('atoken', '1');
                 setAuthToken(res.data.accessToken);
                 return res.data
             }
