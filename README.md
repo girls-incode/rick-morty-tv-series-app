@@ -1,6 +1,15 @@
 ## Rick & Morty TV Series
 
 React-Express app that consume the public API of Rick & Morty: https://rickandmortyapi.com
+
+<kbd><img src="https://github.com/girls-incode/rick-morty-tv-series-app/blob/master/assets/rick-morty-tv-series-app-list.jpg" alt="" /></kbd>
+<br/><br/>
+<kbd><img src="https://github.com/girls-incode/rick-morty-tv-series-app/blob/master/assets/rick-morty-tv-series-app-detail.jpg" alt="" /></kbd>
+<br/><br/>
+<kbd><img src="https://github.com/girls-incode/rick-morty-tv-series-app/blob/master/assets/rick-morty-tv-series-app-register.jpg" alt="" /></kbd>
+<br/><br/>
+<kbd><img src="https://github.com/girls-incode/rick-morty-tv-series-app/blob/master/assets/rick-morty-tv-series-app-login.jpg" alt="" /></kbd>
+<br/><br/>
 ## Features
 
 -  Login & Register with JWT
@@ -15,20 +24,13 @@ React-Express app that consume the public API of Rick & Morty: https://rickandmo
 - `git clone`
 - Execute the development version: `npm run start:dev` or the production one: `npm run start`
 
-## Connect to mongodb
-```
-mongo "mongodb+srv://gis:zv4nAmeaezmdbpmD@cluster0.93qlc.mongodb.net/rickmorty"
-# check the collections and their documents
-show dbs
-use rickmorty
-show collections
-db.createCollection("users")
-db.createCollection("refreshtokens")
-db.users.find({}).pretty()
-db.refreshtokens.find({}).pretty()
-db.users.drop()
-db.refreshtokens.drop()
-```
+## API endpoints
+- http://localhost:4000/api/v1/user/login
+- http://localhost:4000/api/v1/user/register
+- http://localhost:4000/api/v1/user/logout
+- http://localhost:4000/api/v1/user/add-favorite
+- http://localhost:4000/api/v1/user/remove-favorite
+
 ## Tech Stack
 - [x] Express
 - [x] Typescript
