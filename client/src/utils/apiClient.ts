@@ -20,18 +20,4 @@ export function setAuthToken(token: string) {
     }
 }
 
-// apiClient.interceptors.request.use(
-//     config => {
-//         const userState = store.getState().user;
-//         if (userState.accessToken) {
-//             config.headers['Authorization'] = 'Bearer ' + userState.accessToken;
-//         }
-//         console.log(config.headers);
-//         return config;
-//     },
-//     error => {
-//         Promise.reject(error);
-//     }
-// );
-
 export default apiClient;

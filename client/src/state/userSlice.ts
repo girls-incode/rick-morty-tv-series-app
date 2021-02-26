@@ -65,7 +65,6 @@ export const logoutUser = createAsyncThunk(
             if (res.status === 200) {
                 setAuthToken('');
                 localStorage.removeItem('atoken');
-                console.log(res);
                 return initUserState
             }
         } catch (err) {
@@ -181,7 +180,6 @@ export const userSlice = createSlice({
             state.error = '';
         },
         [logoutUser.fulfilled.type]: (state, { payload }) => {
-            console.log('logoutUser', payload);
             return initUserState;
         },
         [logoutUser.rejected.type]: (state, { payload }) => {
