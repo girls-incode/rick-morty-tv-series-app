@@ -8,7 +8,7 @@ import Character from './Character';
 import Nav from '../Nav/Nav';
 import Loader from './../Loader/Loader';
 
-function Characters() {
+function Characters(): React.FC {
     const data = useSelector(characterSelector);
     const { accessToken, loggedin, favorites, email, error } = useSelector(userSelector);
     const { addToast } = useToasts();
